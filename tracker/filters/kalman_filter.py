@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 from abc import abstractmethod
 import numpy as np
 
 
-class KalmanFilter:
+class KalmanFilter(object):
 
     def __init__(self):
 
@@ -60,7 +61,7 @@ class KalmanFilter:
         pass
 
     @abstractmethod
-    def update(self, observation, t_capture) -> None:
+    def update(self, observation, t_capture):
         pass
 
     @abstractmethod

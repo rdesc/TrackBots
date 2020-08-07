@@ -31,7 +31,8 @@ class VisionReceiver:
         self.field = Field()
         self._detection_frame_queue = queue.Queue()
 
-        self._thread = threading.Thread(target=self.receive_packet, daemon=True)
+        self._thread = threading.Thread(target=self.receive_packet)
+        self._thread.daemon = True
 
     def get(self):
         return self._detection_frame_queue.get()

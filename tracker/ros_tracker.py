@@ -13,7 +13,10 @@ from tracker.constants import TrackerConst
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-
+# TODO move this file
+# TODO change to ros logging
+# TODO convert to ROS units
+# make start tracker maybe?
 class ROSTracker:
     MAX_ROBOT_PER_TEAM = TrackerConst.MAX_ROBOT_PER_TEAM
 
@@ -75,7 +78,7 @@ class ROSTracker:
             if robot.last_t_capture + ROSTracker.MAX_UNDETECTED_DELAY < self.current_timestamp:
                 robot.is_active = False
 
-    def pub_odom_msgs(self, robots: list):
+    def pub_odom_msgs(self, robots):
         for robot_id, robot in enumerate(robots):
             if robot.is_active:
                 if robot_id not in self.pub_dict:
@@ -94,7 +97,7 @@ class ROSTracker:
                 odom.header.stamp = rospy.Time.now()  # FIXME: poor approx
 
                 # convert yaw to euler to quaternion
-                quat = tf.transformations.quaternion_from_euler(0, 0, robot.get_orientation)
+                quat = tf.transformations.quaternion_from_euler(0, 0, robot.get_orientation())
 
                 # set the pose
                 odom.pose.pose = Pose(Point(robot_pose[0], robot_pose[1], 0), Quaternion(*quat))
@@ -107,6 +110,6 @@ class ROSTracker:
 
 
 if __name__ == "__main__":
-    vision_address = ('224.5.23.2', 10006)
+    vision_address = (u'224.5.23.2', 10006)
     tracker = ROSTracker("robot_tracker", vision_address)
     tracker.start()

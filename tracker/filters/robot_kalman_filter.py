@@ -1,3 +1,5 @@
+from __future__ import division
+from __future__ import absolute_import
 from tracker.filters.kalman_filter import KalmanFilter
 import numpy as np
 from tracker.constants import RobotConst
@@ -17,7 +19,7 @@ class RobotFilter(KalmanFilter):
 
     def __init__(self):
         self.tau = [0.3, 0.3, 0.3]
-        super().__init__()
+        super(RobotFilter, self).__init__()
 
     @property
     def pose(self):
