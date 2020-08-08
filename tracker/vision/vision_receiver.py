@@ -12,6 +12,7 @@ from tracker.observations import DetectionFrame, BallObservation, RobotObservati
 from tracker.proto.messages_robocup_ssl_wrapper_pb2 import SSL_WrapperPacket
 
 
+# TODO: remove geometry stuff
 class VisionReceiver:
 
     def __init__(self, server_address):

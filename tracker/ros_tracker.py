@@ -1,4 +1,3 @@
-import logging
 import time
 import numpy as np
 
@@ -11,12 +10,8 @@ from tracker.filters.robot_kalman_filter import RobotFilter
 from tracker.vision.vision_receiver import VisionReceiver
 from tracker.constants import TrackerConst
 
-logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-# TODO move this file
 # TODO change to ros logging
-# TODO convert to ROS units
-# make start tracker maybe?
 class ROSTracker:
     MAX_ROBOT_PER_TEAM = TrackerConst.MAX_ROBOT_PER_TEAM
 
@@ -25,10 +20,8 @@ class ROSTracker:
     MAX_UNDETECTED_DELAY = TrackerConst.MAX_UNDETECTED_DELAY
 
     def __init__(self, name, vision_address):
-        self.logger = logging.getLogger('Tracker')
-
         rospy.init_node(name)
-        self.logger.info('Created ros node {}'.format(name))  # TODO: ROS logging maybe?
+        rospy.loginfo('Created ros node {}'.format(name))
 
         # init dict to store all publishers
         self.pub_dict = {}
@@ -36,7 +29,7 @@ class ROSTracker:
         self.last_sending_time = time.time()
 
         self.vision_receiver = VisionReceiver(vision_address)
-        self.logger.info('VisionReceiver created. ({}:{})'.format(*vision_address))
+        rospy.loginfo('VisionReceiver created. ({}:{})'.format(*vision_address))
 
         self.robots = [RobotFilter() for _ in range(ROSTracker.MAX_ROBOT_PER_TEAM)]
 
@@ -71,7 +64,7 @@ class ROSTracker:
             if self.robots:
                 self.pub_odom_msgs(self.robots)
             else:
-                self.logger.info("No robots found...")
+                rospy.logwarn("No robots found...")
 
     def remove_undetected_robot(self):
         for robot in self.robots:
@@ -84,7 +77,7 @@ class ROSTracker:
                 if robot_id not in self.pub_dict:
                     topic_name = "tracked_robot_" + str(robot_id)
                     self.pub_dict[robot_id] = rospy.Publisher(topic_name, Odometry, queue_size=10)
-                    self.logger.info('Created topic {}'.format(topic_name))
+                    rospy.loginfo('Created new topic {}'.format(topic_name))
 
                 # get position and kinematic info from robot
                 robot_pose = tuple(robot.pose)  # position (x, y, yaw)
@@ -93,23 +86,16 @@ class ROSTracker:
                 # TODO: compare t_capture to ros current time
                 # create odom message
                 odom = Odometry()
-                self.logger.info("current time stamp {}".format(self.current_timestamp))
                 odom.header.stamp = rospy.Time.now()  # FIXME: poor approx
 
                 # convert yaw to euler to quaternion
-                quat = tf.transformations.quaternion_from_euler(0, 0, robot.get_orientation())
+                quat = tf.transformations.quaternion_from_euler(0, 0, robot.get_orientation)
 
                 # set the pose
-                odom.pose.pose = Pose(Point(robot_pose[0], robot_pose[1], 0), Quaternion(*quat))
+                odom.pose.pose = Pose(Point(robot_pose[0] / 1000, robot_pose[1] / 1000), Quaternion(*quat))
 
                 # set the twist (first part is linear velocity, second is angular)
-                odom.twist.twist = Twist(Vector3(robot_vel[0], robot_vel[1], 0), Vector3(0, 0, robot_vel[2]))
+                odom.twist.twist = Twist(Vector3(robot_vel[0] / 1000, robot_vel[1] / 1000, 0), Vector3(0, 0, robot_vel[2]))
 
                 # publish message
                 self.pub_dict[robot_id].publish(odom)
-
-
-if __name__ == "__main__":
-    vision_address = (u'224.5.23.2', 10006)
-    tracker = ROSTracker("robot_tracker", vision_address)
-    tracker.start()

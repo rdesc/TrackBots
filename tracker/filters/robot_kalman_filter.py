@@ -33,6 +33,7 @@ class RobotFilter(KalmanFilter):
         else:
             return np.array([self.x[1], self.x[3], self.x[5]]).flatten()
 
+    @property
     def get_orientation(self):
         if not self.is_active:
             return None

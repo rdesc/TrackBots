@@ -1,6 +1,5 @@
 # Tracker constants
 class TrackerConst:
-    TRACKER_ADDRESS = ('127.0.0.1', 21111)
     SEND_DELAY = 0.02
 
     MAX_BALL_ON_FIELD = 1
