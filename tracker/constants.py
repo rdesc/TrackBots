@@ -2,7 +2,6 @@
 class TrackerConst:
     SEND_DELAY = 0.02
 
-    MAX_BALL_ON_FIELD = 1
     MAX_ROBOT_PER_TEAM = 12
 
     BALL_CONFIDENCE_THRESHOLD = 1
