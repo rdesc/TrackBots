@@ -91,7 +91,7 @@ class ROSTracker:
                 quat = tf.transformations.quaternion_from_euler(0, 0, robot.get_orientation)
 
                 # set the pose
-                odom.pose.pose = Pose(Point(robot_pose[0] / 1000, robot_pose[1] / 1000), Quaternion(*quat))
+                odom.pose.pose = Pose(Point(robot_pose[0] / 1000, robot_pose[1] / 1000, 0), Quaternion(*quat))
 
                 # set the twist (first part is linear velocity, second is angular)
                 odom.twist.twist = Twist(Vector3(robot_vel[0] / 1000, robot_vel[1] / 1000, 0), Vector3(0, 0, robot_vel[2]))
