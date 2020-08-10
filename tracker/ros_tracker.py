@@ -11,7 +11,6 @@ from tracker.vision.vision_receiver import VisionReceiver
 from tracker.constants import TrackerConst
 
 
-# TODO change to ros logging
 class ROSTracker:
     MAX_ROBOT_PER_TEAM = TrackerConst.MAX_ROBOT_PER_TEAM
 
