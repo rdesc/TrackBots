@@ -1,4 +1,3 @@
-
 import socket
 import queue
 import threading
@@ -7,7 +6,6 @@ from ipaddress import ip_address
 
 import struct
 
-from tracker.field import Field
 from tracker.observations import DetectionFrame, BallObservation, RobotObservation
 from tracker.proto.messages_robocup_ssl_wrapper_pb2 import SSL_WrapperPacket
 
@@ -28,17 +26,18 @@ class VisionReceiver:
                                    socket.IP_ADD_MEMBERSHIP,
                                    struct.pack("=4sl", socket.inet_aton(server_address[0]), socket.INADDR_ANY))
 
-        self.field = Field()
+        self.wait_for_detection = True
         self._detection_frame_queue = queue.Queue()
 
-        self._thread = threading.Thread(target=self.receive_packet, daemon=True)
+        self._thread = threading.Thread(target=self.receive_packet)
+        self._thread.daemon = True
 
     def get(self):
         return self._detection_frame_queue.get()
 
     def start(self):
         self.logger.info('Starting vision receiver thread.')
-        self._wait_for_geometry()
+        self._wait_for_detection()
         self._thread.start()
 
     def receive_packet(self):
@@ -48,18 +47,16 @@ class VisionReceiver:
             packet.ParseFromString(data)
             if packet.HasField('detection'):
                 self.create_detection_frame(packet)
-            if packet.HasField('geometry'):
-                self.field.update(packet.geometry)
 
-    def _wait_for_geometry(self):
-        self.logger.info('Waiting for geometry from {}:{}'.format(*self.server_address))
+    def _wait_for_detection(self):
+        self.logger.info('Waiting for detection from {}:{}'.format(*self.server_address))
         packet = SSL_WrapperPacket()
-        while self.field.geometry is None:
+        while self.wait_for_detection:
             data, _ = self.socket.recvfrom(2048)
             packet.ParseFromString(data)
-            if packet.HasField('geometry'):
-                self.logger.info('Geometry packet received.')
-                self.field.update(packet.geometry)
+            if packet.HasField('detection'):
+                self.logger.info('Detection packet received.')
+                self.wait_for_detection = False
 
     def create_detection_frame(self, packet):
         balls = []

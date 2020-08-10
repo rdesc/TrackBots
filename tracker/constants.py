@@ -1,11 +1,7 @@
-
-
 # Tracker constants
 class TrackerConst:
-    TRACKER_ADDRESS = ('127.0.0.1', 21111)
     SEND_DELAY = 0.02
 
-    MAX_BALL_ON_FIELD = 1
     MAX_ROBOT_PER_TEAM = 12
 
     BALL_CONFIDENCE_THRESHOLD = 1
@@ -16,20 +12,7 @@ class TrackerConst:
     MAX_UNDETECTED_DELAY = 2
 
 
-# Ball filter constants
-class BallConst:
-    INITIAL_CONFIDENCE = 20
-
-    INITIAL_STATE_COVARIANCE = 1000
-
-    POSITION_PROCESS_COVARIANCE = 1
-    VELOCITY_PROCESS_COVARIANCE = 10
-
-    POSITION_OBSERVATION_COVARIANCE = 2
-
 # Robot filter constants
-
-
 class RobotConst:
     INITIAL_STATE_COVARIANCE = 1000
 
