@@ -46,7 +46,7 @@ class ROSTracker:
         while not rospy.is_shutdown():
 
             detection_frame = self.vision_receiver.get()
-            self._current_timestamp = detection_frame.t_capture  # TODO: convert to ROS time somehow
+            self._current_timestamp = detection_frame.t_capture
 
             for robot_obs in detection_frame.robots_blue:
                 obs_state = np.array([robot_obs.x, robot_obs.y, robot_obs.orientation])
@@ -82,10 +82,9 @@ class ROSTracker:
                 robot_pose = tuple(robot.pose)  # position (x, y, yaw)
                 robot_vel = tuple(robot.velocity)  # velocity (x, y, yaw)
 
-                # TODO: compare t_capture to ros current time
                 # create odom message
                 odom = Odometry()
-                odom.header.stamp = rospy.Time.now()  # FIXME: poor approx
+                odom.header.stamp = rospy.Time.now()  # off by ~2/100 sec compared to self.current_timestamp
 
                 # convert yaw to euler to quaternion
                 quat = tf.transformations.quaternion_from_euler(0, 0, robot.get_orientation)

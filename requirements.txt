@@ -1,3 +1,6 @@
 numpy
 protobuf
-
+rospy
+tf
+nav_msgs
+geometry_msgs
